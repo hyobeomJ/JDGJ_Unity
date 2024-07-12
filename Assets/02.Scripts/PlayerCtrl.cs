@@ -9,9 +9,15 @@ public class PlayerCtrl : MonoBehaviour
     public float moveSpeed = 10.0f;
     public float turnSpeed = 80.0f;
 
+    private readonly float initHp = 100.0f;
+    public float currHp;
+    public delegate void PlayerDieHandler();
+    public static event PlayerDieHandler OnPlayerDie;
+
     // Start is called before the first frame update
     IEnumerator Start()
     {
+        currHp = initHp;
         tr = GetComponent<Transform>();
         anim = GetComponent<Animation>();
 
@@ -65,5 +71,33 @@ public class PlayerCtrl : MonoBehaviour
         {
             anim.CrossFade("Idle",0.25f);
         }
+    }
+
+    void OnTriggerEnter(Collider coll) 
+    {
+        if(currHp >= 0.0f && coll.CompareTag("PUNCH"))
+        {
+            currHp -= 10.0f;
+            Debug.Log($"Player hp = {currHp/initHp}");
+
+            if(currHp <= 0.0f)
+            {
+                PlayerDie();
+            }
+        }
+    }
+    
+    void PlayerDie()
+    {
+        Debug.Log("Player Die !");
+
+        // GameObject[] monsters = GameObject.FindGameObjectsWithTag("MONSTER");
+
+        // foreach(GameObject monster in monsters)
+        // {
+        //     monster.SendMessage("OnPlayerDie", SendMessageOptions.DontRequireReceiver);
+        // }
+
+        OnPlayerDie();
     }
 }
