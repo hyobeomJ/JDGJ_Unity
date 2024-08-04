@@ -103,6 +103,9 @@ public class PlayerCtrl : MonoBehaviour
         // }
 
         OnPlayerDie();
+
+        //GameObject.Find("GameMgr").GetComponent<GameManager>().IsGameOver = true;
+        GameManager.instance.IsGameOver = true;
     }
     void DisplayHealth()
     {

@@ -6,6 +6,8 @@ public class GameManager : MonoBehaviour
 {
     //public Transform[] points;
     public List<Transform> points = new List<Transform>();
+    public List<GameObject> monsterPool = new List<GameObject>();
+    public int maxMonsters = 10;
     public GameObject monster;
     public float createTime = 3.0f;
     private bool isGameOver;
@@ -22,9 +24,26 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public static GameManager instance = null;
+
+    void Awake()
+    {
+        if(instance == null)
+        {
+            instance = this;
+        }
+        else if(instance != this)
+        {
+            Destroy(this.gameObject);
+        }
+
+        DontDestroyOnLoad(this.gameObject);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
+        CreateMonsterPool();
         Transform spawnPointGroup = GameObject.Find("SpawnPointGroup")?.transform;
         //points = spawnPointGroup?.GetComponentsInChildren<Transform>();
         //spawnPointGroup?.GetComponentsInChildren<Transform>(points);
@@ -39,12 +58,35 @@ public class GameManager : MonoBehaviour
     void CreateMonster()
     {
         int idx = Random.Range(0, points.Count);
-        Instantiate(monster,points[idx].position,points[idx].rotation);
+        //Instantiate(monster,points[idx].position,points[idx].rotation);
+
+        GameObject _monster = GetMonsterInPool();
+        _monster?.transform.SetPositionAndRotation(points[idx].position,points[idx].rotation);
+
+        _monster?.SetActive(true);
     }
 
-    // Update is called once per frame
-    void Update()
+    void CreateMonsterPool()
     {
-        
+        for(int i = 0; i < maxMonsters; i++)
+        {
+            var _monster = Instantiate<GameObject>(monster);
+            _monster.name = $"Monster_{i:00}";
+            _monster.SetActive(false);
+
+            monsterPool.Add(_monster);
+        }
+    }
+
+    public GameObject GetMonsterInPool()
+    {
+        foreach(var _monster in monsterPool)
+        {
+            if(_monster.activeSelf == false)
+            {
+                return _monster;
+            }
+        }
+        return null;
     }
 }
