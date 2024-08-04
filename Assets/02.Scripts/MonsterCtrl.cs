@@ -124,21 +124,26 @@ public class MonsterCtrl : MonoBehaviour
         if(coll.collider.CompareTag("BULLET"))
         {
             Destroy(coll.gameObject);
-            anim.SetTrigger(hashHit);
+            //anim.SetTrigger(hashHit);
 
             Vector3 pos = coll.GetContact(0).point;
-            Quaternion rot = Quaternion.LookRotation(-coll.GetContact(0).normal);
-
-            ShowBloodEffect(pos,rot);
-
-            hp-=10;
-            if(hp <= 0)
-            {
-                state = State.DIE;
-
-                GameManager.instance.DisplayScore(50);
-            }
+           
         }
+    }
+    public void OnDamage(Vector3 pos, Vector3 normal)
+    {
+        anim.SetTrigger(hashHit);
+        Quaternion rot = Quaternion.LookRotation(normal);
+
+        ShowBloodEffect(pos,rot);
+
+        hp-=30;
+        if(hp <= 0)
+        {
+            state = State.DIE;
+            GameManager.instance.DisplayScore(50);
+        }
+
     }
     void ShowBloodEffect(Vector3 pos, Quaternion rot)
     {
@@ -177,5 +182,6 @@ public class MonsterCtrl : MonoBehaviour
     void Update()
     {
         
+
     }
 }
