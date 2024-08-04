@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using TMPro;
+
 public class GameManager : MonoBehaviour
 {
     //public Transform[] points;
@@ -25,6 +27,9 @@ public class GameManager : MonoBehaviour
     }
 
     public static GameManager instance = null;
+
+    public TMP_Text scoreText;
+    private int totScore = 0;
 
     void Awake()
     {
@@ -52,6 +57,9 @@ public class GameManager : MonoBehaviour
             points.Add(point);
         }
         InvokeRepeating("CreateMonster",2.0f,createTime);
+
+        totScore = PlayerPrefs.GetInt("TOT_SCORE", 0);
+        DisplayScore(0);
        
     }
     
@@ -88,5 +96,13 @@ public class GameManager : MonoBehaviour
             }
         }
         return null;
+    }
+
+    public void DisplayScore(int score)
+    {
+        totScore += score;
+        scoreText.text = $"<color=#00ff00>SCORE :</color> <color=#ff0000>{totScore:#,##0}</color>";
+
+        PlayerPrefs.SetInt("TOT_SCORE", totScore);
     }
 }

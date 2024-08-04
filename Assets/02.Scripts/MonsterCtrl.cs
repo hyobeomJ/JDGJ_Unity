@@ -34,6 +34,9 @@ public class MonsterCtrl : MonoBehaviour
     void OnEnable() 
     {
         PlayerCtrl.OnPlayerDie += this.OnPlayerDie;
+
+        StartCoroutine(CheckMonsterState());
+        StartCoroutine(MonsterAction());
     }
 
     void OnDisable() 
@@ -41,7 +44,7 @@ public class MonsterCtrl : MonoBehaviour
         PlayerCtrl.OnPlayerDie -= this.OnPlayerDie;
     }
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         monsterTr = GetComponent<Transform>();
 
@@ -52,8 +55,7 @@ public class MonsterCtrl : MonoBehaviour
         bloodEffect = Resources.Load<GameObject>("GoopSprayEffect");
 
         //agent.destination = PlayerTr.position;
-        StartCoroutine(CheckMonsterState());
-        StartCoroutine(MonsterAction());
+        
     }
 
     IEnumerator CheckMonsterState()
@@ -105,6 +107,13 @@ public class MonsterCtrl : MonoBehaviour
                     agent.isStopped = true;
                     anim.SetTrigger(hashDie);
                     GetComponent<CapsuleCollider>().enabled = false;
+                    yield return new WaitForSeconds(3.0f);
+
+                    hp = 100;
+                    isDie = false;
+
+                    GetComponent<CapsuleCollider>().enabled = true;
+                    this.gameObject.SetActive(false);
                     break;
             }
             yield return new WaitForSeconds(0.3f);
@@ -126,6 +135,8 @@ public class MonsterCtrl : MonoBehaviour
             if(hp <= 0)
             {
                 state = State.DIE;
+
+                GameManager.instance.DisplayScore(50);
             }
         }
     }
